@@ -66,6 +66,24 @@ quiz = [
         "options": ["Python", "На русском", "Excel", "HTML"], "correct": ["Python", "На русском"]},
 ]
 
+@bot.message_handler(commands=['menu'])
+def menu(message):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.add(KeyboardButton("/start"), KeyboardButton("/info"))
+    markup.add(KeyboardButton("/score"), KeyboardButton("/update_info"))
+    bot.send_message(message.chat.id, "меню команд:", reply_markup=markup)
+
+@bot.message_handler(commands=['update_info'])
+def update_info(message):
+    update_text = (
+        "Будущее обновление: 0.6"
+        "• Добавим больше тупых вопросов\n"
+        "• Улучшение проверки ответов\n"
+        "Хочешь сам дать идею? Пиши в лс, в описании бота контакты =/"
+        
+    )
+    bot.send_message(message.chat.id, update_text)
+
 @bot.message_handler(commands=['score'])
 def score(message):
     chat_id = message.chat.id
@@ -76,7 +94,7 @@ def score(message):
 
 @bot.message_handler(commands=['info'])
 def info(message):
-    bot.send_message(message.chat.id, "Этот бот проверяет твою адекватность через серию абсурдных вопросов. Чтобы начать — нажми /start.")
+    bot.send_message(message.chat.id, "Этот бот проверяет твою адекватность через серию очень высоко интелектуальных вопросов. Чтобы начать — нажми /start.")
 
 @bot.message_handler(commands=['menu'])
 def menu(message):
@@ -113,8 +131,7 @@ def send_question(chat_id):
         score = user_state[chat_id]["score"]
         bot.send_message(chat_id, f"Тест окончен! Ты набрал {score} баллов, если это число больше 5, поздровляю, вам надо проверится у специалиста")
         del user_state[chat_id]
-
-
+        
 @bot.message_handler(func=lambda message: message.chat.id in user_state)
 def check_answer(message):
     chat_id = message.chat.id
@@ -132,7 +149,7 @@ def check_answer(message):
                 bot.send_message(chat_id, " Такого вопроса нет.")
                 return
         except:
-            bot.send_message(chat_id, " Неверный формат. Пример: Question == 3")
+            bot.send_message(chat_id, " Нопе. епоН: Question == 3")
             return
 
     if text.startswith("Score =="):
@@ -148,7 +165,7 @@ def check_answer(message):
     index = user_state[chat_id]["question_index"]
     if index >= len(quiz):
         bot.send_message(chat_id, "Ошибка: Вопросов больше нет.")
-        return  
+        return
 
     question_data = quiz[index]
     correct_answers = question_data["correct"]
@@ -167,4 +184,4 @@ def check_answer(message):
         bot.send_message(chat_id, f"Тест окончен! Ты набрал {score} баллов. Если это число больше 5 — поздравляю, тебе стоит провериться у специалиста.")
         del user_state[chat_id]
 
-bot.polling(none_stop=True) 
+bot.polling(none_stop=True)           
